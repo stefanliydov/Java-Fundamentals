@@ -6,8 +6,8 @@ import bg.softuni.staticData.ExceptionMessages;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class RepositorySorters {
-    public static void printSortedStudents(
+public class RepositorySorter {
+    public void printSortedStudents(
             HashMap<String, ArrayList<Integer>> courseData,
             String comparisonType,
             int numberOfStudents) {
@@ -39,7 +39,7 @@ public class RepositorySorters {
         printStudents(courseData, sortedStudents);
     }
 
-    private static void printStudents(HashMap<String, ArrayList<Integer>> courseData, List<String> sortedStudents) {
+    private void printStudents(HashMap<String, ArrayList<Integer>> courseData, List<String> sortedStudents) {
         for (String student : sortedStudents) {
             OutputWriter.printStudent(student, courseData.get(student));
         }

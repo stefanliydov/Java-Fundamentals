@@ -8,7 +8,7 @@ import java.util.Queue;
 
 public class IOManager {
 
-    public static void traverseDirectory(int depth) {
+    public void traverseDirectory(int depth) {
         Queue<File> subFolders = new LinkedList<>();
 
         String path = SessionData.currentPath;
@@ -45,7 +45,7 @@ public class IOManager {
         }
     }
 
-    public static void createDirectoryInCurrentFolder(String name) {
+    public void createDirectoryInCurrentFolder(String name) {
         String path = SessionData.currentPath + "\\" + name;
         File file = new File(path);
         boolean wasDirMade = file.mkdir();
@@ -55,7 +55,7 @@ public class IOManager {
         }
     }
 
-    public static void changeCurrentDirRelativePath(String relativePath) {
+    public void changeCurrentDirRelativePath(String relativePath) {
         if (relativePath.equals("..")) {
             // go one directory up
             try {
@@ -74,7 +74,7 @@ public class IOManager {
         }
     }
 
-    public static void changeCurrentDirAbsolute(String absolutePath) {
+    public void changeCurrentDirAbsolute(String absolutePath) {
         File file = new File(absolutePath);
         if (!file.exists()) {
             OutputWriter.displayException(ExceptionMessages.INVALID_PATH);

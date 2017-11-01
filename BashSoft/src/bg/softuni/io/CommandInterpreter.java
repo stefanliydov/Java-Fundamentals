@@ -3,15 +3,33 @@ package bg.softuni.io;
 import bg.softuni.judge.Tester;
 import bg.softuni.network.DownloadManager;
 import bg.softuni.repository.StudentsRepository;
-import bg.softuni.staticData.SessionData;
 import bg.softuni.staticData.ExceptionMessages;
+import bg.softuni.staticData.SessionData;
 
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 
 class CommandInterpreter {
-    static void interpretCommand(String input) throws IOException {
+
+    private Tester tester;
+    private StudentsRepository repository;
+    private DownloadManager downloadManager;
+    private IOManager inpuOutputManager;
+
+     public CommandInterpreter(Tester tester,
+                         StudentsRepository repository,
+                         DownloadManager downloadManager,
+                         IOManager inpuOutputManager) {
+
+        this.tester = tester;
+        this.repository = repository;
+        this.downloadManager = downloadManager;
+        this.inpuOutputManager = inpuOutputManager;
+    }
+
+
+    void interpretCommand(String input) throws IOException {
         String[] data = input.split("\\s+");
         String command = data[0].toLowerCase();
         switch (command) {
@@ -60,27 +78,27 @@ class CommandInterpreter {
         }
     }
 
-    private static void tryDownloadFile(String command, String[] data) {
+    private  void tryDownloadFile(String command, String[] data) {
         if (data.length != 2) {
             displayInvalidCommandMessage(command);
             return;
         }
 
         String fileUrl = data[1];
-        DownloadManager.download(fileUrl);
+        this.downloadManager.download(fileUrl);
     }
 
-    private static void tryDownloadFileOnNewThread(String command, String[] data) {
+    private  void tryDownloadFileOnNewThread(String command, String[] data) {
         if (data.length != 2) {
             displayInvalidCommandMessage(command);
             return;
         }
 
         String fileUrl = data[1];
-        DownloadManager.downloadOnNewThread(fileUrl);
+        this.downloadManager.downloadOnNewThread(fileUrl);
     }
 
-    private static void tryPrintFilteredStudents(String input, String[] data) {
+    private  void tryPrintFilteredStudents(String input, String[] data) {
         if (data.length != 5) {
             displayInvalidCommandMessage(input);
             return;
@@ -94,7 +112,7 @@ class CommandInterpreter {
         tryParseParametersForFilter(takeCommand, takeQuantity, course, filter);
     }
 
-    private static void tryParseParametersForFilter(
+    private  void tryParseParametersForFilter(
             String takeCommand, String takeQuantity,
             String courseName, String filter) {
         if (!takeCommand.equals("take")) {
@@ -103,19 +121,19 @@ class CommandInterpreter {
         }
 
         if (takeQuantity.equals("all")) {
-            StudentsRepository.filterAndTake(courseName, filter);
+            this.repository.filterAndTake(courseName, filter);
             return;
         }
 
         try {
             int studentsToTake = Integer.parseInt(takeQuantity);
-            StudentsRepository.filterAndTake(courseName, filter, studentsToTake);
+            this.repository.filterAndTake(courseName, filter, studentsToTake);
         } catch (NumberFormatException nfe) {
             OutputWriter.displayException(ExceptionMessages.IVALID_TAKE_QUANTITY_PARAMETER);
         }
     }
 
-    private static void tryPrintOrderedStudents(String input, String[] data) {
+    private  void tryPrintOrderedStudents(String input, String[] data) {
         if (data.length != 5) {
             displayInvalidCommandMessage(input);
             return;
@@ -130,7 +148,7 @@ class CommandInterpreter {
         tryParseParametersForOrder(takeCommand, takeQuantity, courseName, orderType);
     }
 
-    private static void tryParseParametersForOrder(
+    private  void tryParseParametersForOrder(
             String takeCommand, String takeQuantity,
             String courseName, String orderType) {
         if (!takeCommand.equals("take")) {
@@ -139,19 +157,19 @@ class CommandInterpreter {
         }
 
         if (takeQuantity.equals("all")) {
-            StudentsRepository.orderAndTake(courseName, orderType);
+            this.repository.orderAndTake(courseName, orderType);
             return;
         }
 
         try {
             int studentsToTake = Integer.parseInt(takeQuantity);
-            StudentsRepository.orderAndTake(courseName, orderType, studentsToTake);
+            this.repository.orderAndTake(courseName, orderType, studentsToTake);
         } catch (NumberFormatException nfe) {
             OutputWriter.displayException(ExceptionMessages.IVALID_TAKE_QUANTITY_PARAMETER);
         }
     }
 
-    private static void tryShowWantedCourse(String input, String[] data) {
+    private  void tryShowWantedCourse(String input, String[] data) {
         if (data.length != 2 && data.length != 3) {
             displayInvalidCommandMessage(input);
             return;
@@ -159,17 +177,17 @@ class CommandInterpreter {
 
         if (data.length == 2) {
             String courseName = data[1];
-            StudentsRepository.getStudentsByCourse(courseName);
+            this.repository.getStudentsByCourse(courseName);
         }
 
         if (data.length == 3) {
             String courseName = data[1];
             String userName = data[2];
-            StudentsRepository.getStudentMarksInCourse(courseName, userName);
+            this.repository.getStudentMarksInCourse(courseName, userName);
         }
     }
 
-    private static void tryOpenFile(String input, String[] data) throws IOException {
+    private  void tryOpenFile(String input, String[] data) throws IOException {
         if (data.length != 2) {
             displayInvalidCommandMessage(input);
             return;
@@ -181,7 +199,7 @@ class CommandInterpreter {
         Desktop.getDesktop().open(file);
     }
 
-    private static void tryCompareFiles(String input, String[] data) throws IOException {
+    private  void tryCompareFiles(String input, String[] data) throws IOException {
         if (data.length != 3) {
             displayInvalidCommandMessage(input);
             return;
@@ -189,10 +207,10 @@ class CommandInterpreter {
 
         String firstPath = data[1];
         String secondPath = data[2];
-        Tester.compareContent(firstPath, secondPath);
+        this.tester.compareContent(firstPath, secondPath);
     }
 
-    private static void tryGetHelp(String input, String[] data) {
+    private  void tryGetHelp(String input, String[] data) {
         if (data.length != 1) {
             displayInvalidCommandMessage(input);
             return;
@@ -201,67 +219,67 @@ class CommandInterpreter {
         displayHelp();
     }
 
-    private static void tryReadDatabaseFromFile(String input, String[] data) throws IOException {
+    private  void tryReadDatabaseFromFile(String input, String[] data) throws IOException {
         if (data.length != 2) {
             displayInvalidCommandMessage(input);
             return;
         }
 
         String fileName = data[1];
-        StudentsRepository.initializeData(fileName);
+        this.repository.initializeData(fileName);
     }
 
-    private static void tryChangeAbsolutePath(String input, String[] data) {
+    private  void tryChangeAbsolutePath(String input, String[] data) {
         if (data.length != 2) {
             displayInvalidCommandMessage(input);
             return;
         }
 
         String absolutePath = data[1];
-        IOManager.changeCurrentDirAbsolute(absolutePath);
+        this.inpuOutputManager.changeCurrentDirAbsolute(absolutePath);
     }
 
-    private static void tryChangeRelativePath(String input, String[] data) {
+    private  void tryChangeRelativePath(String input, String[] data) {
         if (data.length != 2) {
             displayInvalidCommandMessage(input);
             return;
         }
 
         String relativePath = data[1];
-        IOManager.changeCurrentDirRelativePath(relativePath);
+        this.inpuOutputManager.changeCurrentDirRelativePath(relativePath);
     }
 
-    private static void tryTraverseFolders(String input, String[] data) {
+    private  void tryTraverseFolders(String input, String[] data) {
         if (data.length != 1 && data.length != 2) {
             displayInvalidCommandMessage(input);
             return;
         }
 
         if (data.length == 1) {
-            IOManager.traverseDirectory(0);
+            this.inpuOutputManager.traverseDirectory(0);
         }
 
         if (data.length == 2) {
-            IOManager.traverseDirectory(Integer.valueOf(data[1]));
+            this.inpuOutputManager.traverseDirectory(Integer.valueOf(data[1]));
         }
     }
 
-    private static void tryCreateDirectory(String input, String[] data) {
+    private  void tryCreateDirectory(String input, String[] data) {
         if (data.length != 2) {
             displayInvalidCommandMessage(input);
             return;
         }
 
         String folderName = data[1];
-        IOManager.createDirectoryInCurrentFolder(folderName);
+        this.inpuOutputManager.createDirectoryInCurrentFolder(folderName);
     }
 
-    private static void displayInvalidCommandMessage(String input) {
+    private  void displayInvalidCommandMessage(String input) {
         String output = String.format("The command '%s' is invalid", input);
         OutputWriter.displayException(output);
     }
 
-    private static void displayHelp() {
+    private  void displayHelp() {
         StringBuilder helpBuilder = new StringBuilder();
         helpBuilder.append("make directory - mkdir nameOfFolder")
                 .append(System.lineSeparator());
@@ -287,5 +305,14 @@ class CommandInterpreter {
                 .append(System.lineSeparator());
         OutputWriter.writeMessage(helpBuilder.toString());
         OutputWriter.writeEmptyLine();
+    }
+
+    private void tryDropDb(String input, String[] data){
+       if(data.length!=1){
+           this.displayInvalidCommandMessage(input);
+           return;
+       }
+       this.repository.unloadData();
+       OutputWriter.writeMessageOnNewLine("Database dropped!");
     }
 }

@@ -24,7 +24,7 @@ public class OutputWriter {
         System.out.println("\u001B[31m" + message + "\u001B[0m");
     }
 
-    public static void printStudent(String name, List<Integer> marks) {
+    public  void printStudent(String name, List<Integer> marks) {
         String output = String.format("%s - %s", name, marks.toString());
         OutputWriter.writeMessageOnNewLine(output);
     }
