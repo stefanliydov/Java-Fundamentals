@@ -1,0 +1,5 @@
+register 5 Performance Trabant 601 1988 2000 1 10000 1000
+check 5
+start 1
+start 3
+Cops Are Here
