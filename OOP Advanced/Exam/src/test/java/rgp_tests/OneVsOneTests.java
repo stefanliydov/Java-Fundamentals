@@ -8,6 +8,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,27 +37,28 @@ public class OneVsOneTests {
     }
     @Test
     public void testWithOneParticipantList(){
-        String message = this.action.executeAction(this.targetableList);
         this.targetableList.add(dummy1);
+        String message = this.action.executeAction(this.targetableList);
         Assert.assertEquals("There should be exactly 2 participants for OneVsOne!",message);
     }
     @Test
     public void testWithMoreThanTwoList(){
-        String message = this.action.executeAction(this.targetableList);
         this.targetableList.add(dummy1);
         this.targetableList.add(dummy2);
         this.targetableList.add(dummy1);
+        String message = this.action.executeAction(this.targetableList);
         Assert.assertEquals("There should be exactly 2 participants for OneVsOne!",message);
     }
     @Test
-    public void fight(){
+    public void fight() throws NoSuchFieldException, IllegalAccessException {
         this.targetableList.add(dummy1);
         this.targetableList.add(dummy2);
-        dummy1.takeDamage(40);
-        dummy2.takeDamage(50);
-        action.executeAction(this.targetableList);
+        this.action.executeAction(targetableList);
 
-       Assert.assertTrue(true);
+        Field field = dummy1.getClass().getDeclaredField("level");
+        field.setAccessible(true);
+        int level = (int) field.get(dummy1);
+       Assert.assertEquals(2,level);
     }
 
 }
